@@ -14,14 +14,14 @@ byte sensorPin       = 2;
 
 // The hall-effect flow sensor outputs approximately 4.5 pulses per second per
 // litre/minute of flow.
-float calibrationFactor = 0.45/0.58;
+float calibrationFactor = 0.45/0.57;
 
 volatile byte pulseCount;  
 
 float flowRate;
 unsigned int flowMilliLitres;
 unsigned long totalMilliLitres;
-
+float vel;
 unsigned long oldTime;
 
 void setup()
@@ -42,7 +42,7 @@ void setup()
   flowMilliLitres   = 0;
   totalMilliLitres  = 0;
   oldTime           = 0;
-
+  vel=0;
   // The Hall-effect sensor is connected to pin 2 which uses interrupt 0.
   // Configured to trigger on a FALLING state change (transition from HIGH
   // state to LOW state)
@@ -78,7 +78,7 @@ void loop()
     // passed through the sensor in this 1 second interval, then multiply by 1000 to
     // convert to millilitres.
     flowMilliLitres = (flowRate / 60) * 1000;
-    
+    vel=flowRate*10/(3.14*1.905*1.905*60);
     // Add the millilitres passed in this second to the cumulative total
     totalMilliLitres += flowMilliLitres;
       
@@ -89,14 +89,19 @@ void loop()
     Serial.print(int(flowRate));  // Print the integer part of the variable
     Serial.print("L/min");
     Serial.print("\t");       // Print tab space
-
+    Serial.print("Velocity in m/s: ");
+    Serial.print(vel);
+    Serial.print("\t");
     // Print the cumulative total of litres flowed since starting
     Serial.print("Output Liquid Quantity: ");        
     Serial.print(totalMilliLitres);
     Serial.println("mL"); 
-    Serial.print("\t");       // Print tab space
+    Serial.print("\t"); 
+    
+    // Print tab space
   Serial.print(totalMilliLitres/1000);
   Serial.print("L");
+  
     
 
     // Reset the pulse counter so we can start incrementing again
